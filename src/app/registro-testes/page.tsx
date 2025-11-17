@@ -17,11 +17,35 @@ export default function RegistroTestes() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    //TODO: Adicionar lógica para enviar dados
-    alert('Teste registrado com sucesso!');
-    setFormData({ atletaId: '', dataTeste: '', tipoTeste: '', resultado: '', laboratorio: '' });
+    try {
+      const response = await fetch('/api/tests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          athlete_id: formData.atletaId,
+          test_date: formData.dataTeste,
+          test_type: formData.tipoTeste,
+          result: formData.resultado,
+          laboratory: formData.laboratorio,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Teste registrado com sucesso!');
+        setFormData({ atletaId: '', dataTeste: '', tipoTeste: '', resultado: '', laboratorio: '' });
+      } else {
+        const errorData = await response.json();
+        console.error('Error creating test:', errorData);
+        alert('Erro ao registrar teste.');
+      }
+    } catch (error) {
+      console.error('Error creating test:', error);
+      alert('Erro ao registrar teste.');
+    }
   };
 
   return (

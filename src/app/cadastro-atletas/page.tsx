@@ -17,11 +17,35 @@ export default function CadastroAtletas() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica para enviar dados
-    alert('Atleta cadastrado com sucesso!');
-    setFormData({ nome: '', cpf: '', dataNascimento: '', clube: '', posicao: '' });
+    try {
+      const response = await fetch('/api/athletes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.nome,
+          cpf: formData.cpf,
+          birth_date: formData.dataNascimento,
+          club: formData.clube,
+          position: formData.posicao,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Atleta cadastrado com sucesso!');
+        setFormData({ nome: '', cpf: '', dataNascimento: '', clube: '', posicao: '' });
+      } else {
+        const errorData = await response.json();
+        console.error('Error creating athlete:', errorData);
+        alert('Erro ao cadastrar atleta.');
+      }
+    } catch (error) {
+      console.error('Error creating athlete:', error);
+      alert('Erro ao cadastrar atleta.');
+    }
   };
 
   return (

@@ -1,27 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 interface Atleta {
   id: string;
-  nome: string;
-  clube: string;
-  status: string;
+  name: string;
+  club: string;
 }
 
 export default function Consultas() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [atletas] = useState<Atleta[]>([
-    { id: '1', nome: 'João Silva', clube: 'Flamengo', status: 'Ativo' },
-    { id: '2', nome: 'Maria Santos', clube: 'Corinthians', status: 'Ativo' },
-    { id: '3', nome: 'Pedro Oliveira', clube: 'São Paulo', status: 'Suspenso' },
-  ]);
+  const [atletas, setAtletas] = useState<Atleta[]>([]);
+
+  useEffect(() => {
+    const fetchAtletas = async () => {
+      try {
+        const response = await fetch('/api/athletes');
+        if (response.ok) {
+          const data = await response.json();
+          setAtletas(data);
+        } else {
+          console.error('Error fetching athletes');
+        }
+      } catch (error) {
+        console.error('Error fetching athletes:', error);
+      }
+    };
+
+    fetchAtletas();
+  }, []);
 
   const filteredAtletas = atletas.filter(atleta =>
-    atleta.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    atleta.clube.toLowerCase().includes(searchTerm.toLowerCase())
+    atleta.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    atleta.club.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleReport = (id: string) => {
@@ -82,31 +95,21 @@ export default function Consultas() {
                   <tr>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nome</th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Clube</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredAtletas.map((atleta) => (
                     <tr key={atleta.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 text-gray-900 font-medium">{atleta.nome}</td>
-                      <td className="px-6 py-4 text-gray-600">{atleta.clube}</td>
+                      <td className="px-6 py-4 text-gray-900 font-medium">{atleta.name}</td>
+                      <td className="px-6 py-4 text-gray-600">{atleta.club}</td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          atleta.status === 'Ativo' 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-red-100 text-red-700'
-                        }`}>
-                          {atleta.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => handleReport(atleta.id)}
+                        <Link
+                          href={`/consultas/${atleta.id}`}
                           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
                         >
                           Relatório
-                        </button>
+                        </Link>
                       </td>
                     </tr>
                   ))}
