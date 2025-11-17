@@ -37,10 +37,6 @@ export default function Consultas() {
     atleta.club.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleReport = (id: string) => {
-    alert(`Emitindo relatório para atleta ID: ${id}`);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200">
