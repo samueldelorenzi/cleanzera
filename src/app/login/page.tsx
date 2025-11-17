@@ -112,19 +112,10 @@ export default function Login() {
               )}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              Usuário padrão: admin@cleanzera.com
-            </p>
-            <p className="text-sm text-gray-500">
-              Senha: admin123
-            </p>
-          </div>
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          © 2024 Cleanzera. Todos os direitos reservados.
+          © 2025 Cleanzera. Todos os direitos reservados.
         </p>
       </div>
     </div>
