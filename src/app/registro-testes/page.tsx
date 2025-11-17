@@ -22,13 +22,15 @@ export default function RegistroTestes() {
   });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingAthletes, setLoadingAthletes] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     fetch('/api/athletes')
       .then(res => res.json())
       .then(data => setAthletes(data))
-      .catch(err => console.error('Error loading athletes:', err));
+      .catch(err => console.error('Error loading athletes:', err))
+      .finally(() => setLoadingAthletes(false));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -131,10 +133,11 @@ export default function RegistroTestes() {
                     name="atletaId"
                     value={formData.atletaId}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
                     required
+                    disabled={loadingAthletes}
                   >
-                    <option value="">Selecione um atleta</option>
+                    <option value="">{loadingAthletes ? 'Carregando atletas...' : 'Selecione um atleta'}</option>
                     {athletes.map(athlete => (
                       <option key={athlete.id} value={athlete.id}>
                         {athlete.name}

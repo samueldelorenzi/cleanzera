@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { formatDate } from '@/lib/formatDate';
 
 interface Atleta {
   id: string;
@@ -28,44 +29,60 @@ export default function Relatorio() {
 
   const [atleta, setAtleta] = useState<Atleta | null>(null);
   const [testes, setTestes] = useState<Teste[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
-      const fetchAthlete = async () => {
+      const fetchData = async () => {
         try {
-          const response = await fetch(`/api/athletes/${id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setAtleta(data);
+          const [athleteResponse, testsResponse] = await Promise.all([
+            fetch(`/api/athletes/${id}`),
+            fetch(`/api/tests?athlete_id=${id}`)
+          ]);
+
+          if (athleteResponse.ok) {
+            const athleteData = await athleteResponse.json();
+            setAtleta(athleteData);
           } else {
             console.error('Error fetching athlete');
           }
-        } catch (error) {
-          console.error('Error fetching athlete:', error);
-        }
-      };
 
-      const fetchTests = async () => {
-        try {
-          const response = await fetch(`/api/tests?athlete_id=${id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setTestes(data);
+          if (testsResponse.ok) {
+            const testsData = await testsResponse.json();
+            setTestes(testsData);
           } else {
             console.error('Error fetching tests');
           }
         } catch (error) {
-          console.error('Error fetching tests:', error);
+          console.error('Error fetching data:', error);
+        } finally {
+          setLoading(false);
         }
       };
 
-      fetchAthlete();
-      fetchTests();
+      fetchData();
     }
   }, [id]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">Carregando dados do atleta...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!atleta) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Atleta não encontrado.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -106,7 +123,7 @@ export default function Relatorio() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Data de Nascimento</p>
-                <p className="text-lg font-medium text-gray-900">{atleta.birth_date}</p>
+                <p className="text-lg font-medium text-gray-900">{formatDate(atleta.birth_date)}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Clube</p>
@@ -135,7 +152,7 @@ export default function Relatorio() {
                 <tbody className="divide-y divide-gray-200">
                   {testes.map((teste) => (
                     <tr key={teste.id}>
-                      <td className="px-6 py-4 text-gray-900">{teste.test_date}</td>
+                      <td className="px-6 py-4 text-gray-900">{formatDate(teste.test_date)}</td>
                       <td className="px-6 py-4 text-gray-600">{teste.test_type}</td>
                       <td className="px-6 py-4 text-gray-600">{teste.result}</td>
                       <td className="px-6 py-4 text-gray-600">{teste.laboratory}</td>

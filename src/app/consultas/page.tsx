@@ -14,6 +14,7 @@ interface Atleta {
 export default function Consultas() {
   const [searchTerm, setSearchTerm] = useState('');
   const [atletas, setAtletas] = useState<Atleta[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,6 +29,8 @@ export default function Consultas() {
         }
       } catch (error) {
         console.error('Error fetching athletes:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -96,8 +99,14 @@ export default function Consultas() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
+          {loading ? (
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <p className="mt-4 text-gray-600">Carregando atletas...</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
@@ -138,6 +147,7 @@ export default function Consultas() {
               </div>
             )}
           </div>
+          )}
         </div>
       </main>
     </div>
