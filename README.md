@@ -289,11 +289,6 @@ npm run type-check
 - ⚡ Time to Interactive < 2s
 - ⚡ Queries de banco < 50ms (média)
 
-### Escalabilidade
-- 📈 Suporta 10.000+ requisições simultâneas
-- 📈 Auto-scaling até 100 instâncias
-- 📈 Banco suporta 1M+ registros
-
 ### Disponibilidade
 - ✅ 99.9% uptime (SLA)
 - ✅ Zero-downtime deployments
